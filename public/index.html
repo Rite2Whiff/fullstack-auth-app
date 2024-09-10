@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My first full stack project</title>
+  </head>
+
+  <script src="https://cdn.jsdelivr.net/npm/axios@1.6.7/dist/axios.min.js"></script>
+  <script>
+    async function signup() {
+      try {
+        const username = document.getElementById("signup-username").value;
+        const password = document.getElementById("signup-password").value;
+
+        await axios.post("http://localhost:3000/signup", {
+          username: username,
+          password: password,
+        });
+
+        alert("You have successfully signed up.");
+      } catch (error) {
+        console.error("Signup error:", error.message);
+        alert("Error during signup: " + error.message);
+      }
+    }
+
+    async function signin() {
+      try {
+        const username = document.getElementById("signin-username").value;
+        const password = document.getElementById("signin-password").value;
+
+        const response = await axios.post("http://localhost:3000/signin", {
+          username: username,
+          password: password,
+        });
+
+        localStorage.setItem("token", response.data.token);
+        alert("You have successfully signed in.");
+      } catch (error) {
+        console.error("Signin error:", error.message);
+        alert("Error during signin: " + error.message);
+      }
+      getUserInfo();
+    }
+
+    async function getUserInfo() {
+      try {
+        const response = await axios.get("http://localhost:3000/me", {
+          headers: {
+            token: localStorage.getItem("token"),
+          },
+        });
+
+        document.getElementById(
+          "user-information"
+        ).innerHTML = `Username: ${response.data.username} Password:${response.data.password}`;
+      } catch (error) {
+        console.error("Fetch user info error:", error.message);
+        alert("Error fetching user information: " + error.message);
+      }
+    }
+
+    // Fetch user info on page load
+  </script>
+
+  <style>
+    body {
+      display: flex;
+      min-height: 100vh;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .main-div {
+      display: flex;
+      gap: 10px;
+      flex-direction: column;
+    }
+  </style>
+
+  <body>
+    <div class="main-div">
+      <div>
+        <input type="text" name="username" id="signup-username" />
+        <input type="text" name="password" id="signup-password" />
+        <button onclick="signup()">sign up</button>
+      </div>
+      <div>
+        <input type="text" name="username" id="signin-username" />
+        <input type="text" name="password" id="signin-password" />
+        <button onclick="signin()">sign in</button>
+      </div>
+      <div id="user-information"></div>
+    </div>
+  </body>
+</html>
